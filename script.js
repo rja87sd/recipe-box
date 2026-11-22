@@ -9,7 +9,6 @@ const recipeArea = document.getElementById("recipe");
 
 async function loadRecipe() {
   try {
-
     if (input.value === "") {
       statusText.textContent = "Please enter a number between 1 and 50.";
       return;
@@ -82,8 +81,6 @@ async function loadRecipe() {
     img.className = "img-fluid mb-2 rounded-2";
     card.prepend(img);
 
-
-
     recipeArea.appendChild(card);
   } catch (error) {
     statusText.textContent =
@@ -95,39 +92,27 @@ async function loadRecipe() {
 
 button.addEventListener("click", loadRecipe);
 
-// ---------- Step 2: a loading message ----------
-// The request takes a moment. Tell the user something is happening.
-// At "Step 2 goes here", add:
-//   statusText.textContent = "Loading...";
-// Then, right after the line  const recipe = await response.json();  add:
-//   statusText.textContent = "";
-// Check: in DevTools → Network, set "No throttling" to "Slow 4G". Click. You see "Loading...".
+const dishInput = document.getElementById("dish-name");
+const postButton = document.getElementById("post-btn");
+const postStatus = document.getElementById("post-status");
+const savedArea = document.getElementById("saved");
 
-// ---------- Step 3: no recipe with that number ----------
-// Try number 9999. The card says "undefined". Look at the console: the server answered
-// with status 404 and a message, not a recipe.
-// response.ok is true for 200-299, false for errors like 404.
-// At "Step 3 goes here", add:
-//   if (!response.ok) {
-//     statusText.textContent = "No recipe with that number. Try 1 to 50.";
-//     return;   // stop here, don't make a card
-//   }
-// Check: 9999 shows your message. 1 still shows a recipe.
+async function addDish() {
+  savedArea.textContent = "";
+  const response = await fetch("https://dummyjson.com/recipes/add", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ name: dishInput.value }),
+  });
 
-// ---------- Step 4: no internet ----------
-// In DevTools → Network, set "No throttling" to "Offline". Click. Red error in the console,
-// and the page just says "Loading..." forever.
-// try = "try these lines". catch = "if anything in them breaks, run this instead".
-// Wrap EVERYTHING inside loadRecipe (from const url ... to recipeArea.appendChild(card);) like this:
-//   try {
-//     ...all the lines...
-//   } catch (error) {
-//     statusText.textContent = "Can't reach the recipe server. Check your internet.";
-//   }
-// Check: Offline shows your message. Set it back to "No throttling" and it works again.
+  const newDish = await response.json();
+  console.log(newDish);
 
-// ---------- Extra (if you finish early) ----------
-// 1. Show the ingredients as a list: createElement("ul"), then recipe.ingredients.forEach(...)
-//    makes one <li> per ingredient.
-// 2. Show the picture: createElement("img"), set .src = recipe.image and .alt = recipe.name,
-//    and className = "img-fluid rounded mb-2".
+  const message = document.createElement("p");
+  message.className = "alert alert-success";
+  message.textContent = 'Added "' + newDish.name + '" as recipe #' + newDish.id + " (practice server: not really saved)";
+  savedArea.appendChild(message);
+  dishInput.value = "";
+}
+
+postButton.addEventListener("click", addDish);
