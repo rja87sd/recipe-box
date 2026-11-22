@@ -1,6 +1,13 @@
 # recipe-box
 Level 2 Week 5 Day 5
 
+## Endpoints
+- GET https://dummyjson.com/recipes/{id}: gets one recipe
+- POST https://dummyjson.com/recipes/add: adds a dish (practice API, not really saved)
+
+## Live site
+https://rja87sd.github.io/recipe-box/
+
 
 | # | What changed? | Commit Message | Branch |
 |---|---------------|----------------|--------|
