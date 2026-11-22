@@ -99,20 +99,43 @@ const savedArea = document.getElementById("saved");
 
 async function addDish() {
   savedArea.textContent = "";
-  const response = await fetch("https://dummyjson.com/recipes/add", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ name: dishInput.value }),
-  });
+  if (dishInput.value === "") {
+    postStatus.textContent = "Type a dish name first.";
+    return;
+  }
 
-  const newDish = await response.json();
-  console.log(newDish);
+  try {
+    postStatus.textContent = "Sending...";
 
-  const message = document.createElement("p");
-  message.className = "alert alert-success";
-  message.textContent = 'Added "' + newDish.name + '" as recipe #' + newDish.id + " (practice server: not really saved)";
-  savedArea.appendChild(message);
-  dishInput.value = "";
+    const response = await fetch("https://dummyjson.com/recipes/add", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name: dishInput.value }),
+    });
+
+    if (!response.ok) {
+      postStatus.textContent = "The server didn't add it. Try again.";
+      return;
+    }
+
+    const newDish = await response.json();
+    postStatus.textContent = "";
+    console.log(newDish);
+
+    const message = document.createElement("p");
+    message.className = "alert alert-success";
+    message.textContent =
+      'Added "' +
+      newDish.name +
+      '" as recipe #' +
+      newDish.id +
+      " (practice server: not really saved)";
+    savedArea.appendChild(message);
+    dishInput.value = "";
+  } catch (error) {
+    postStatus.textContent =
+      "Can't reach the recipe server. Check your internet.";
+  }
 }
 
 postButton.addEventListener("click", addDish);
